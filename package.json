@@ -1,7 +1,8 @@
 {
-  "name": "svelte-app",
+  "name": "convoy-offers-svelte",
   "version": "1.0.0",
-  "private": true,
+  "repository": "convoy-offers-svelte",
+  "license": "MIT",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
