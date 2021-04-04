@@ -63,5 +63,7 @@
     letter-spacing: 0.4px;
     line-height: 20px;
     font-weight: 500;
+    cursor: pointer;
+    margin-right: 12px;
   }
 </style>

@@ -60,6 +60,7 @@
     background: white;
     padding: 32px 36px;
     width: 100%;
+    cursor: pointer;
   }
 
   .container:first-of-type {

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import { Router, Route } from "svelte-routing";
   import Header from "./components/Header.svelte";
@@ -7,7 +7,7 @@
   import Offers from "./routes/Offers.svelte";
   import MyJobs from "./routes/MyJobs.svelte";
 
-  export let name;
+  export let name: string;
 
   // Used for SSR. A falsy value is ignored by the Router.
   export let url = "offers";
