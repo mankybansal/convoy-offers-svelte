@@ -1,16 +1,22 @@
 <script>
   import ConvoyLogo from "./ConvoyLogo.svelte";
   import { Link } from "svelte-routing";
+
+  let activeRoute;
+
+  function getProps({ location }) {
+    activeRoute = location.pathname;
+  }
 </script>
 
 <div class="container">
   <ConvoyLogo />
   <div class="header-buttons">
-    <div class="header-button selected">
-      <Link to="offers">Offers</Link>
+    <div class="header-button {activeRoute === '/offers' && 'selected'}">
+      <Link to="offers" {getProps}>Offers</Link>
     </div>
-    <div class="header-button">
-      <Link to="myJobs">My Jobs</Link>
+    <div class="header-button {activeRoute === '/myJobs' && 'selected'}">
+      <Link to="myJobs" {getProps}>My Jobs</Link>
     </div>
   </div>
 </div>

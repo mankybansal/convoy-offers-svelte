@@ -1,31 +1,39 @@
 <script>
+  import { onMount } from "svelte";
   import Offer from "../components/Offer.svelte";
   import Sortbar from "../components/Sortbar.svelte";
   import { createEventDispatcher } from "svelte";
-  import { generateKey } from "../utils";
+  import { encodeOffer, getStoredOffers, setStoredOffers } from "../utils";
 
   const dispatch = createEventDispatcher();
 
   export let offers;
-  export let requestedOffers;
   export let handleShowMore;
   export let sort;
   export let handleSort;
   export let sortOrder;
   export let handleSortOrder;
 
-  function toggleRequested(offer) {
-    requestedOffers[generateKey(offer)] = !requestedOffers[generateKey(offer)];
-  }
+  let requestedOffers = {};
+
+  const toggleRequested = (offer) => () => {
+    requestedOffers[encodeOffer(offer)] = !requestedOffers[encodeOffer(offer)];
+    setStoredOffers(requestedOffers);
+  };
+
+  onMount(() => {
+    requestedOffers = getStoredOffers();
+  });
 </script>
 
 <div class="container">
   <Sortbar {handleSort} {sort} {handleSortOrder} {sortOrder} />
-  {#each offers as offer (generateKey(offer))}
+
+  {#each offers as offer (encodeOffer(offer))}
     <Offer
       offerData={offer}
-      requested={requestedOffers[generateKey(offer)]}
-      toggleRequested={() => toggleRequested(offer)}
+      requested={requestedOffers[encodeOffer(offer)]}
+      toggleRequested={toggleRequested(offer)}
     />
   {/each}
   <button class="showMore-button" on:click={handleShowMore}>Show More</button>

@@ -6,35 +6,25 @@
 
   import Offers from "./routes/Offers.svelte";
   import MyJobs from "./routes/MyJobs.svelte";
+  import * as Config from "./config";
 
   export let name: string;
 
   // Used for SSR. A falsy value is ignored by the Router.
-  export let url = "offers";
+  export let url = "/offers";
 
-  const apiBaseURL = "https://convoy-mock-api.herokuapp.com/offers";
   let offers = [];
-  let requestedOffers = {};
 
-  const sortOptions = [
-    "pickupDate",
-    "dropoffDate",
-    "price",
-    "origin",
-    "destination",
-    "miles",
-  ];
-  const sortOrderOptions = ["desc", "asc"];
-
-  let limit = 3;
-  let offset = 0;
-  let sortOrder = sortOrderOptions[0];
-  let sort = sortOptions[0];
+  const params = new URLSearchParams(window.location.search);
+  let limit = params.get("limit") ?? Config.DEFAULT_LIMIT;
+  let offset = params.get("offset") ?? Config.DEFAULT_OFFSET;
+  let sortOrder = params.get("sortOrder") ?? Config.DEFAULT_SORT_ORDER;
+  let sort = params.get("sort") ?? Config.DEFAULT_SORT;
 
   let fetchError = false;
 
   const fetchOffers = async () => {
-    const apiURL = `${apiBaseURL}?limit=${limit}&offset=${offset}&order=${sortOrder}&sort=${sort}`;
+    const apiURL = `${Config.BASE_API_URL}?limit=${limit}&offset=${offset}&order=${sortOrder}&sort=${sort}`;
 
     try {
       const response = await fetch(apiURL);
@@ -43,10 +33,25 @@
       if (newOffers.length > 0) {
         offers = [...offers, ...newOffers];
       }
+
+      updateUrlParams();
     } catch (error) {
       fetchError = true;
     }
   };
+
+  function updateUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    params.set("sort", sort);
+    params.set("sortOrder", sortOrder);
+    params.set("limit", offset.toString());
+    params.set("limit", limit.toString());
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?${params}`
+    );
+  }
 
   function handleShowMore() {
     offset = offset + 3;
@@ -71,23 +76,26 @@
 <main>
   <Router {url}>
     <Header />
+
     <Route path="offers">
       {#if fetchError}
         <div class="fetch-error">Couldn't load offers, please try again.</div>
       {/if}
+
       <Offers
         {offers}
         {sort}
         {sortOrder}
-        {requestedOffers}
         {handleSort}
         {handleShowMore}
         {handleSortOrder}
       />
     </Route>
+
     <Route path="myJobs">
-      <MyJobs {requestedOffers} />
+      <MyJobs />
     </Route>
+
     <Footer {name} />
   </Router>
 </main>

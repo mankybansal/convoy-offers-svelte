@@ -1,6 +1,6 @@
 <script>
-  import moment from "moment";
-  import { fade, fly } from "svelte/transition";
+  import { fade } from "svelte/transition";
+  import { formatPrice, formatAppointment } from "../utils";
 
   export let offerData = {};
   export let requested;
@@ -8,46 +8,37 @@
 
   const { destination, origin, miles, offer } = offerData;
 
-  function formatAppointment(stop) {
-    return `${moment(stop.start).format("ddd DD/MM h:mma")} - ${moment(
-      stop.end
-    ).format("h:mma")}`;
-  }
-
-  const offerPrice = Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(Math.round(offer));
+  const strings = {
+    requested: "REQUESTED",
+    offerPrice: formatPrice(offer),
+    originAppt: formatAppointment(origin.pickup),
+    destinationAppt: formatAppointment(destination.dropoff),
+    originCityState: `${origin.city}, ${origin.state}`,
+    destinationCityState: `${destination.city}, ${destination.state}`,
+    formattedMiles: `${miles.toLocaleString()} miles`,
+  };
 </script>
 
-<div
-  class="container"
-  in:fly={{ y: 50, duration: 500 }}
-  on:click={toggleRequested}
->
+<div class="container" on:click={toggleRequested}>
   {#if requested}
-    <div class="requested" in:fade>REQUESTED</div>
+    <div class="requested" in:fade>{strings.requested}</div>
   {/if}
+
   <div class="offer-details">
     <div class="location-details">
       <div class="stop">
-        <div class="location-name">{origin.city}, {origin.state}</div>
-        <div class="location-appointment">
-          {formatAppointment(origin.pickup)}
-        </div>
+        <div class="location-name">{strings.originCityState}</div>
+        <div class="location-appointment">{strings.originAppt}</div>
       </div>
       <div class="stop">
-        <div class="location-name">{destination.city}, {destination.state}</div>
-        <div class="location-appointment">
-          {formatAppointment(destination.dropoff)}
-        </div>
+        <div class="location-name">{strings.destinationCityState}</div>
+        <div class="location-appointment">{strings.destinationAppt}</div>
       </div>
     </div>
     <div class="other-details">
       <div class="equipment-type">53' Reefer</div>
-      <div class="distance">{miles.toLocaleString()} miles</div>
-      <div class="offer-price">{offerPrice}</div>
+      <div class="distance">{strings.formattedMiles}</div>
+      <div class="offer-price">{strings.offerPrice}</div>
     </div>
   </div>
 </div>
@@ -174,12 +165,15 @@
     .other-details {
       margin-top: 24px;
       margin-left: 20px;
+      flex-direction: column;
     }
 
     .equipment-type,
-    .distance {
+    .distance,
+    .offer-price {
       margin-left: 0;
-      margin-right: 24px;
+      margin-top: 8px;
+      text-align: unset;
     }
   }
 </style>
